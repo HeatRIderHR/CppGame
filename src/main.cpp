@@ -12,6 +12,7 @@ int main()
 	
 	rlImGuiSetup(true);
 	ImGuiIO &io = ImGui::GetIO();
+	io.ConfigFlags = ImGuiConfigFlags_DockingEnable;
 	io.FontGlobalScale = 2;
 
 	Vector2 poly = {100, 100};
@@ -22,6 +23,11 @@ int main()
 		ClearBackground(BLACK);
 
 		rlImGuiBegin();
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, {});
+		ImGui::PushStyleColor(ImGuiCol_DockingEmptyBg, {});
+		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+		ImGui::PopStyleColor(2);
+		
 		ImGui::Begin("test");
 		ImGui::Text("Hi");
 		if (ImGui::Button("Button"))
