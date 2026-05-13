@@ -25,8 +25,16 @@ bool initGame()
 {
     assetManager.loadAll();
 
-    gameData.gameMap.create(30, 30);
+    gameData.gameMap.create(100, 100);
     
+    for (int y = 0; y < gameData.gameMap.h; y++)
+        for (int x = 0; x < gameData.gameMap.w; x++)
+        {
+            if (x == 0 || y == 0)
+            {
+                gameData.gameMap.getBlockUnsafe(x, y).type = Block::dirt;
+            }
+        }
     // Camera
     gameData.camera.target = { 0, 0 };
     gameData.camera.rotation = 0.0f;
@@ -59,6 +67,7 @@ bool updateGame()
     int blockY = (int)floor(worldPos.y);
 
     // Place Blocks
+    static int currentBlock = 1;
     if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
     {
         auto b = gameData.gameMap.getBlockSafe(blockX, blockY);
@@ -73,8 +82,13 @@ bool updateGame()
         auto b = gameData.gameMap.getBlockSafe(blockX, blockY);
         if (b)
         {
-            b->type = Block::gold;
+            b->type = currentBlock;
         }
+    }
+    int mouseWheel = GetMouseWheelMove();
+    if (0 < currentBlock + mouseWheel && currentBlock + mouseWheel < Block::BLOCKS_COUNT)
+    {
+        currentBlock += mouseWheel;
     }
 
     // Map test code
@@ -127,10 +141,23 @@ bool updateGame()
                                 {0,0}, // origin (top left)
                                 0.0f,  // Rotation
                                 WHITE); // tint
+                DrawTexturePro( assetManager.textures,
+                                getTextureAtlas(b.type, 0 ,32, 32), // Source
+                                { (float)x, (float)y, 1, 1}, // Loaction
+                                {0,0}, // origin (top left)
+                                0.0f,  // Rotation
+                                WHITE); // tint
             }
         }
     }
     // draw selected block
+    DrawTexturePro( assetManager.textures,
+        getTextureAtlas(currentBlock, 0 ,32, 32),
+        {(float)blockX, (float)blockY, 1, 1},
+        {0,0},
+        0.0f,
+        WHITE
+    );
     DrawTexturePro(
         assetManager.frame,
         {0,0, (float)assetManager.frame.width, (float)assetManager.frame.height},
@@ -139,6 +166,8 @@ bool updateGame()
         0.0f,
         WHITE
     );
+
+    
     // End camera & ImGui
     EndMode2D();
     //rlImGuiEnd();
