@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstdint>
 
 struct Block
@@ -58,6 +60,7 @@ struct Block
 		boneWordrobe,
 		boneBookShelf,
 		bonePlatform,
+        snow2,
 
 		BLOCKS_COUNT,
 

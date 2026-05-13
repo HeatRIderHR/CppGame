@@ -24,9 +24,6 @@ int main()
 	ImGuiIO &io = ImGui::GetIO();
 	io.ConfigFlags = ImGuiConfigFlags_DockingEnable;
 	io.FontGlobalScale = 2;
-
-	// Variable for shape position
-	const Vector2 poly = {100, 100};
 	
 	if (!initGame())
 	{
@@ -37,7 +34,6 @@ int main()
 	{
 		// Clear window
 		BeginDrawing();
-		ClearBackground(BLACK);
 		
 		if (!updateGame())
 		{

@@ -1,13 +1,17 @@
+// External Libarys
 #include <raylib.h>
+#include <cmath>
+// Testing
+#include <imgui.h>
+#include <rlImGui.h>
+
+// Internal Files
 #include "gameMain.h"
 #include <asserts.h>
 #include <assetManager.h>
 #include <gameMap.h>
 #include <helpers.h>
-#include <cmath>
 
-#include <imgui.h>
-#include <rlImGui.h>
 
 struct GameData
 {
@@ -21,12 +25,9 @@ bool initGame()
 {
     assetManager.loadAll();
 
-
-
     gameData.gameMap.create(30, 30);
-     
-
-
+    
+    // Camera
     gameData.camera.target = { 0, 0 };
     gameData.camera.rotation = 0.0f;
     gameData.camera.zoom = 100.0f;
@@ -36,14 +37,13 @@ bool initGame()
 
 bool updateGame()
 {
+    // Delta Time
     float deltaTime = GetFrameTime();
     if (deltaTime > 1.f / 5) { deltaTime = 1/5.f; }
 
+    // Camera
     gameData.camera.offset = {GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f};
 
-    ClearBackground({75, 75, 150, 255});
-
-    // Camera
     if (IsKeyDown(KEY_LEFT)) gameData.camera.target.x -= 30.f * deltaTime;
     if (IsKeyDown(KEY_RIGHT)) gameData.camera.target.x += 30.f * deltaTime;
     if (IsKeyDown(KEY_UP)) gameData.camera.target.y -= 30.f * deltaTime;
@@ -52,39 +52,67 @@ bool updateGame()
     if (IsKeyDown(KEY_EQUAL)) gameData.camera.zoom += 100.f * deltaTime;
     if (IsKeyDown(KEY_MINUS)) gameData.camera.zoom -= 100.f * deltaTime;
     BeginMode2D(gameData.camera);
-    
 
-    rlImGuiBegin();
-    ImGui::Begin("test");
-    static float sinHeight = 0;
-    ImGui::SliderFloat("Sin Height", &sinHeight, 0, 10);
-    static float fre = 0;
-    ImGui::SliderFloat("Sin fre", &fre, 0, 10);
+    // Current Block
+    Vector2 worldPos = GetScreenToWorld2D(GetMousePosition(), gameData.camera);
+    int blockX = (int)floor(worldPos.x);
+    int blockY = (int)floor(worldPos.y);
 
-    ImGui::End();
-    for (int y = 0; y < gameData.gameMap.h; y++)
-    for (int x = 0; x < gameData.gameMap.w; x++)
+    // Place Blocks
+    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
     {
-        
-        float s = (std::sin(x) + 1.f) * sinHeight;
-        float c = (std::sin(x + fre) + 1.f) / 2.f;
-
-        if (gameData.gameMap.h - (gameData.gameMap.h * 0.1 * s) - gameData.gameMap.h *  0.1< y)
+        auto b = gameData.gameMap.getBlockSafe(blockX, blockY);
+        if (b)
         {
-            gameData.gameMap.getBlockUnsafe(x, y).type = Block::dirt;
-        }
-        else if (gameData.gameMap.h - (gameData.gameMap.h * 0.3 * c) - gameData.gameMap.h * 0.3 < y)
-        {
-            gameData.gameMap.getBlockUnsafe(x, y).type = Block::goldBlock;
-        }
-        else
-        {
-            gameData.gameMap.getBlockUnsafe(x, y).type = Block::air;
+            *b = {};
         }
     }
 
+    if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+    {
+        auto b = gameData.gameMap.getBlockSafe(blockX, blockY);
+        if (b)
+        {
+            b->type = Block::gold;
+        }
+    }
+
+    // Map test code
+    // rlImGuiBegin();
+    // ImGui::Begin("test");
+    // static float sinHeight = 0;
+    // ImGui::SliderFloat("Sin Height", &sinHeight, 0, 10);
+    // static float fre = 0;
+    // ImGui::SliderFloat("Sin fre", &fre, 0, 10);
+
+    // ImGui::End();
+    
+    // for (int y = 0; y < gameData.gameMap.h; y++)
+    // for (int x = 0; x < gameData.gameMap.w; x++)
+    // {
+        
+    //     float s = (std::sin(x) + 1.f) * sinHeight;
+    //     float c = (std::sin(x + fre) + 1.f) / 2.f;
+
+    //     if (gameData.gameMap.h - (gameData.gameMap.h * 0.1 * s) - gameData.gameMap.h *  0.1< y)
+    //     {
+    //         gameData.gameMap.getBlockUnsafe(x, y).type = Block::dirt;
+    //     }
+    //     else if (gameData.gameMap.h - (gameData.gameMap.h * 0.3 * c) - gameData.gameMap.h * 0.3 < y)
+    //     {
+    //         gameData.gameMap.getBlockUnsafe(x, y).type = Block::goldBlock;
+    //     }
+    //     else
+    //     {
+    //         gameData.gameMap.getBlockUnsafe(x, y).type = Block::snow2;
+    //     }
+    // }
+
 
     // Load map
+
+    ClearBackground({75, 75, 150, 255});
+
     for (int y = 0; y < gameData.gameMap.h; y++)
     {
         for (int x = 0; x < gameData.gameMap.w; x++)
@@ -102,12 +130,18 @@ bool updateGame()
             }
         }
     }
-
-    // End camera
+    // draw selected block
+    DrawTexturePro(
+        assetManager.frame,
+        {0,0, (float)assetManager.frame.width, (float)assetManager.frame.height},
+        {(float)blockX, (float)blockY, 1, 1},
+        {0,0},
+        0.0f,
+        WHITE
+    );
+    // End camera & ImGui
     EndMode2D();
-
-
-    rlImGuiEnd();
+    //rlImGuiEnd();
     return true;
 }
 
