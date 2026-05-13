@@ -4,6 +4,10 @@
 #include <assetManager.h>
 #include <gameMap.h>
 #include <helpers.h>
+#include <cmath>
+
+#include <imgui.h>
+#include <rlImGui.h>
 
 struct GameData
 {
@@ -17,13 +21,11 @@ bool initGame()
 {
     assetManager.loadAll();
 
-    gameData.gameMap.create(30, 10);
 
-    gameData.gameMap.getBlockUnsafe(0,0).type = Block::dirt;
-    gameData.gameMap.getBlockUnsafe(1,1).type = Block::goldBlock;
-    gameData.gameMap.getBlockUnsafe(2,2).type = Block::grass;
-    gameData.gameMap.getBlockUnsafe(3,3).type = Block::glass;
-    gameData.gameMap.getBlockUnsafe(4,4).type = Block::platform;
+
+    gameData.gameMap.create(30, 30);
+     
+
 
     gameData.camera.target = { 0, 0 };
     gameData.camera.rotation = 0.0f;
@@ -42,15 +44,46 @@ bool updateGame()
     ClearBackground({75, 75, 150, 255});
 
     // Camera
-    if (IsKeyDown(KEY_LEFT)) gameData.camera.target.x -= 3.f * deltaTime;
-    if (IsKeyDown(KEY_RIGHT)) gameData.camera.target.x += 3.f * deltaTime;
-    if (IsKeyDown(KEY_UP)) gameData.camera.target.y -= 3.f * deltaTime;
-    if (IsKeyDown(KEY_DOWN)) gameData.camera.target.y += 3.f * deltaTime;
+    if (IsKeyDown(KEY_LEFT)) gameData.camera.target.x -= 30.f * deltaTime;
+    if (IsKeyDown(KEY_RIGHT)) gameData.camera.target.x += 30.f * deltaTime;
+    if (IsKeyDown(KEY_UP)) gameData.camera.target.y -= 30.f * deltaTime;
+    if (IsKeyDown(KEY_DOWN)) gameData.camera.target.y += 30.f * deltaTime;
 
-    if (IsKeyDown(KEY_EQUAL)) gameData.camera.zoom -= 100.f * deltaTime;
-    if (IsKeyDown(KEY_MINUS)) gameData.camera.zoom += 100.f * deltaTime;
+    if (IsKeyDown(KEY_EQUAL)) gameData.camera.zoom += 100.f * deltaTime;
+    if (IsKeyDown(KEY_MINUS)) gameData.camera.zoom -= 100.f * deltaTime;
     BeginMode2D(gameData.camera);
     
+
+    rlImGuiBegin();
+    ImGui::Begin("test");
+    static float sinHeight = 0;
+    ImGui::SliderFloat("Sin Height", &sinHeight, 0, 10);
+    static float fre = 0;
+    ImGui::SliderFloat("Sin fre", &fre, 0, 10);
+
+    ImGui::End();
+    for (int y = 0; y < gameData.gameMap.h; y++)
+    for (int x = 0; x < gameData.gameMap.w; x++)
+    {
+        
+        float s = (std::sin(x) + 1.f) * sinHeight;
+        float c = (std::sin(x + fre) + 1.f) / 2.f;
+
+        if (gameData.gameMap.h - (gameData.gameMap.h * 0.1 * s) - gameData.gameMap.h *  0.1< y)
+        {
+            gameData.gameMap.getBlockUnsafe(x, y).type = Block::dirt;
+        }
+        else if (gameData.gameMap.h - (gameData.gameMap.h * 0.3 * c) - gameData.gameMap.h * 0.3 < y)
+        {
+            gameData.gameMap.getBlockUnsafe(x, y).type = Block::goldBlock;
+        }
+        else
+        {
+            gameData.gameMap.getBlockUnsafe(x, y).type = Block::air;
+        }
+    }
+
+
     // Load map
     for (int y = 0; y < gameData.gameMap.h; y++)
     {
@@ -73,6 +106,8 @@ bool updateGame()
     // End camera
     EndMode2D();
 
+
+    rlImGuiEnd();
     return true;
 }
 
