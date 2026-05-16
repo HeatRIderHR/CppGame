@@ -1,5 +1,5 @@
 # Large Project
-This project is desing to push me to learn more about Cpp by creating a large game based on Terraria.
+This project is desing to push me to learn more about C++ by creating a large game based on Terraria.
 
 ## Where I'm at 
 With this project I'm currently at the stage of making the map and tile placement system, as shown below.

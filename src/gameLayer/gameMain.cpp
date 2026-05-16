@@ -1,6 +1,6 @@
 // External Libarys
 #include <raylib.h>
-#include <cmath>
+#include <raymath.h>
 // Testing
 #include <imgui.h>
 #include <rlImGui.h>
@@ -59,6 +59,8 @@ bool updateGame()
 
     if (IsKeyDown(KEY_EQUAL)) gameData.camera.zoom += 100.f * deltaTime;
     if (IsKeyDown(KEY_MINUS)) gameData.camera.zoom -= 100.f * deltaTime;
+    
+    
     BeginMode2D(gameData.camera);
 
     // Current Block
@@ -91,45 +93,21 @@ bool updateGame()
         currentBlock += mouseWheel;
     }
 
-    // Map test code
-    // rlImGuiBegin();
-    // ImGui::Begin("test");
-    // static float sinHeight = 0;
-    // ImGui::SliderFloat("Sin Height", &sinHeight, 0, 10);
-    // static float fre = 0;
-    // ImGui::SliderFloat("Sin fre", &fre, 0, 10);
+    // Screen View
+    Vector2 topLeftView = GetScreenToWorld2D({ 0,0 }, gameData.camera);
+    Vector2 bottomRightView = GetScreenToWorld2D({ (float)GetScreenWidth(), (float)GetScreenHeight() }, gameData.camera);
 
-    // ImGui::End();
-    
-    // for (int y = 0; y < gameData.gameMap.h; y++)
-    // for (int x = 0; x < gameData.gameMap.w; x++)
-    // {
-        
-    //     float s = (std::sin(x) + 1.f) * sinHeight;
-    //     float c = (std::sin(x + fre) + 1.f) / 2.f;
+    int startXView = Clamp((int)floor(topLeftView.x - 1),     0, gameData.gameMap.w - 1);
+    int endXView   = Clamp((int)ceilf(bottomRightView.x + 1), 0, gameData.gameMap.w - 1);
+    int startYView = Clamp((int)floor(topLeftView.y - 1),     0, gameData.gameMap.w - 1);
+    int endYView   = Clamp((int)ceilf(bottomRightView.y + 1), 0, gameData.gameMap.w - 1);
 
-    //     if (gameData.gameMap.h - (gameData.gameMap.h * 0.1 * s) - gameData.gameMap.h *  0.1< y)
-    //     {
-    //         gameData.gameMap.getBlockUnsafe(x, y).type = Block::dirt;
-    //     }
-    //     else if (gameData.gameMap.h - (gameData.gameMap.h * 0.3 * c) - gameData.gameMap.h * 0.3 < y)
-    //     {
-    //         gameData.gameMap.getBlockUnsafe(x, y).type = Block::goldBlock;
-    //     }
-    //     else
-    //     {
-    //         gameData.gameMap.getBlockUnsafe(x, y).type = Block::snow2;
-    //     }
-    // }
-
-
-    // Load map
-
+    // Draw to screen 
     ClearBackground({75, 75, 150, 255});
 
-    for (int y = 0; y < gameData.gameMap.h; y++)
+    for (int y = startYView; y < endYView; y++)
     {
-        for (int x = 0; x < gameData.gameMap.w; x++)
+        for (int x = startXView; x < endXView; x++)
         {
             auto &b = gameData.gameMap.getBlockUnsafe(x, y);
 
@@ -171,8 +149,11 @@ bool updateGame()
     // End camera & ImGui
     EndMode2D();
     //rlImGuiEnd();
+    DrawFPS(10, 10);
+
     return true;
-}
+};
+
 
 void closeGame()
 {
