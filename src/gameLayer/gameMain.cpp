@@ -111,21 +111,31 @@ bool updateGame()
         {
             auto &b = gameData.gameMap.getBlockUnsafe(x, y);
 
-            if(b.type != Block::air){
+            if (b.type != Block::air)
+            {
 
-                DrawTexturePro( assetManager.textures,
-                                getTextureAtlas(b.type, 0 ,32, 32), // Source
-                                { (float)x, (float)y, 1, 1}, // Loaction
-                                {0,0}, // origin (top left)
-                                0.0f,  // Rotation
-                                WHITE); // tint
-                DrawTexturePro( assetManager.textures,
-                                getTextureAtlas(b.type, 0 ,32, 32), // Source
-                                { (float)x, (float)y, 1, 1}, // Loaction
-                                {0,0}, // origin (top left)
-                                0.0f,  // Rotation
-                                WHITE); // tint
+                if (b.type == Block::woodLog)
+                {
+                    
+                    DrawTexturePro( assetManager.treeTextures,
+                        getTextureAtlas(getWoodLogType(x, y, gameData.gameMap), 2 ,32, 32), // Source
+                        { (float)x, (float)y, 1, 1}, // Loaction
+                        {0,0}, // origin (top left)
+                        0.0f,  // Rotation
+                        WHITE); // tint
+
+                }
+                else 
+                {
+                    DrawTexturePro( assetManager.textures,
+                        getTextureAtlas(b.type, 0 ,32, 32), // Source
+                        { (float)x, (float)y, 1, 1}, // Loaction
+                        {0,0}, // origin (top left)
+                        0.0f,  // Rotation
+                        WHITE); // tint
+                }
             }
+            
         }
     }
     // draw selected block
