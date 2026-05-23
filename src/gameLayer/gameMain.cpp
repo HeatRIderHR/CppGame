@@ -1,6 +1,7 @@
 // External Libarys
 #include <raylib.h>
 #include <raymath.h>
+#include <random>
 // Testing
 #include <imgui.h>
 #include <rlImGui.h>
@@ -11,7 +12,7 @@
 #include <assetManager.h>
 #include <gameMap.h>
 #include <helpers.h>
-
+#include <randomStuff.h>
 
 struct GameData
 {
@@ -39,7 +40,8 @@ bool initGame()
     gameData.camera.target = { 0, 0 };
     gameData.camera.rotation = 0.0f;
     gameData.camera.zoom = 100.0f;
-
+    
+    
     return true;
 }
 
@@ -84,7 +86,9 @@ bool updateGame()
         auto b = gameData.gameMap.getBlockSafe(blockX, blockY);
         if (b)
         {
+            std::ranlux24_base rng(blockX * blockY);
             b->type = currentBlock;
+            b->variation = getRandomInt(rng, 0, 3);
         }
     }
     int mouseWheel = GetMouseWheelMove();
@@ -113,12 +117,12 @@ bool updateGame()
 
             if (b.type != Block::air)
             {
-
+                
                 if (b.type == Block::woodLog)
                 {
                     
                     DrawTexturePro( assetManager.treeTextures,
-                        getTextureAtlas(getWoodLogType(x, y, gameData.gameMap), 2 ,32, 32), // Source
+                        getTextureAtlas(getWoodLogType(x, y, gameData.gameMap), b.variation ,32, 32), // Source
                         { (float)x, (float)y, 1, 1}, // Loaction
                         {0,0}, // origin (top left)
                         0.0f,  // Rotation
@@ -127,8 +131,9 @@ bool updateGame()
                 }
                 else 
                 {
+                    
                     DrawTexturePro( assetManager.textures,
-                        getTextureAtlas(b.type, 0 ,32, 32), // Source
+                        getTextureAtlas(b.type, b.variation ,32, 32), // Source
                         { (float)x, (float)y, 1, 1}, // Loaction
                         {0,0}, // origin (top left)
                         0.0f,  // Rotation
