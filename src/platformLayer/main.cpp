@@ -34,15 +34,17 @@ int main()
 	{
 		// Clear window
 		BeginDrawing();
-		
+		rlImGuiBegin();
 		if (!updateGame())
 		{
 			CloseWindow();
 		}
 
+		rlImGuiEnd();
 		EndDrawing();
 	}
 
+	
 	CloseWindow();
 	closeGame();
 

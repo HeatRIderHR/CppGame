@@ -13,6 +13,7 @@
 #include <gameMap.h>
 #include <helpers.h>
 #include <randomStuff.h>
+#include <worldGenerator.h>
 
 struct GameData
 {
@@ -26,16 +27,19 @@ bool initGame()
 {
     assetManager.loadAll();
 
-    gameData.gameMap.create(100, 100);
+    // gameData.gameMap.create(200, 400);
+
+    // for (int x = 0; x < gameData.gameMap.w; x++)
+    // {
+    //     for (int y = 0; y < gameData.gameMap.h; y++)
+    //     {
+    //         Block b;
+    //         b.type = Block::woodPlank;
+    //         gameData.gameMap.getBlockUnsafe(x , y) = b;
+    //     }
+    // }
+    generateWorld(gameData.gameMap);
     
-    for (int y = 0; y < gameData.gameMap.h; y++)
-        for (int x = 0; x < gameData.gameMap.w; x++)
-        {
-            if (x == 0 || y == 0)
-            {
-                gameData.gameMap.getBlockUnsafe(x, y).type = Block::dirt;
-            }
-        }
     // Camera
     gameData.camera.target = { 0, 0 };
     gameData.camera.rotation = 0.0f;
@@ -53,15 +57,11 @@ bool updateGame()
 
     // Camera
     gameData.camera.offset = {GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f};
-
-    if (IsKeyDown(KEY_LEFT)) gameData.camera.target.x -= 30.f * deltaTime;
-    if (IsKeyDown(KEY_RIGHT)) gameData.camera.target.x += 30.f * deltaTime;
-    if (IsKeyDown(KEY_UP)) gameData.camera.target.y -= 30.f * deltaTime;
-    if (IsKeyDown(KEY_DOWN)) gameData.camera.target.y += 30.f * deltaTime;
-
-    if (IsKeyDown(KEY_EQUAL)) gameData.camera.zoom += 100.f * deltaTime;
-    if (IsKeyDown(KEY_MINUS)) gameData.camera.zoom -= 100.f * deltaTime;
-    
+    static float CAMERA_SPEED = 30;
+    if (IsKeyDown(KEY_LEFT)) gameData.camera.target.x -= CAMERA_SPEED * deltaTime;
+    if (IsKeyDown(KEY_RIGHT)) gameData.camera.target.x += CAMERA_SPEED * deltaTime;
+    if (IsKeyDown(KEY_UP)) gameData.camera.target.y -= CAMERA_SPEED * deltaTime;
+    if (IsKeyDown(KEY_DOWN)) gameData.camera.target.y += CAMERA_SPEED * deltaTime;
     
     BeginMode2D(gameData.camera);
 
@@ -143,7 +143,7 @@ bool updateGame()
             
         }
     }
-    // draw selected block
+    // Draw selected block
     DrawTexturePro( assetManager.textures,
         getTextureAtlas(currentBlock, 0 ,32, 32),
         {(float)blockX, (float)blockY, 1, 1},
@@ -161,11 +161,16 @@ bool updateGame()
     );
 
     
-    // End camera & ImGui
+    // End camera
     EndMode2D();
-    //rlImGuiEnd();
-    DrawFPS(10, 10);
 
+    // Imgui debug
+    ImGui::Begin("Game Controll");
+    ImGui::SliderFloat("Camera zoom", &gameData.camera.zoom, 10, 200);
+    ImGui::SliderFloat("Camera Speed", &CAMERA_SPEED, 5, 50);
+    ImGui::End();
+    DrawFPS(10, 10);
+    
     return true;
 };
 

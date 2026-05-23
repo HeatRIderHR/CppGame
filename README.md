@@ -4,8 +4,11 @@ This project is desing to push me to learn more about C++ by creating a large ga
 ## Things to add
 - [ ] Make background tiles
 - [ ] Alow for differnt tree types 
-f
+
 ## Logs
+
+### 2026_05_23: Random blocks 
+Random Number generator used to desied block type based on location
 
 ### 2026_05_16 Dynamic Tree Logs 
 Based on where logs are placed they will change type as shown below.
