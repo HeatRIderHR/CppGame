@@ -103,8 +103,8 @@ bool updateGame()
 
     int startXView = Clamp((int)floor(topLeftView.x - 1),     0, gameData.gameMap.w - 1);
     int endXView   = Clamp((int)ceilf(bottomRightView.x + 1), 0, gameData.gameMap.w - 1);
-    int startYView = Clamp((int)floor(topLeftView.y - 1),     0, gameData.gameMap.w - 1);
-    int endYView   = Clamp((int)ceilf(bottomRightView.y + 1), 0, gameData.gameMap.w - 1);
+    int startYView = Clamp((int)floor(topLeftView.y - 1),     0, gameData.gameMap.h - 1);
+    int endYView   = Clamp((int)ceilf(bottomRightView.y + 1), 0, gameData.gameMap.h - 1);
 
     // Draw to screen 
     ClearBackground({75, 75, 150, 255});
@@ -166,8 +166,8 @@ bool updateGame()
 
     // Imgui debug
     ImGui::Begin("Game Controll");
-    ImGui::SliderFloat("Camera zoom", &gameData.camera.zoom, 10, 200);
-    ImGui::SliderFloat("Camera Speed", &CAMERA_SPEED, 5, 50);
+    ImGui::SliderFloat("Camera zoom", &gameData.camera.zoom, 5, 200);
+    ImGui::SliderFloat("Camera Speed", &CAMERA_SPEED, 5, 250);
     ImGui::End();
     DrawFPS(10, 10);
     

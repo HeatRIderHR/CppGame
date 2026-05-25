@@ -6,7 +6,14 @@ This project is desing to push me to learn more about C++ by creating a large ga
 - [ ] Alow for differnt tree types 
 
 ## Logs
+## 2026_05_23: Map Generator useing sin wave
+<br>
+<img src="GitVisuals/mapGenoratorSin.png">
 
+## 2026_05_23: Drawing Error Fixed
+There was a error when drawing the map. Map width was given insted of hight causing it to render out of bounds 
+<br>
+<img src="GitVisuals/errorDrawingOutOffBounds.png">
 ### 2026_05_23: Random blocks 
 Random Number generator used to desied block type based on location
 
